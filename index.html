@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>좋아서 모아둔 것들</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Gaegu:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#fff5f8; --pink:#ffd6e3; --pink-deep:#ff9fbd; --pink-text:#d6578a;
+    --card:#ffffff; --text:#5a4650;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Gowun Dodum","Malgun Gothic",sans-serif; color:var(--text);
+         background:linear-gradient(180deg,#ffeaf1 0%,#fff5f8 40%,#fff9fb 100%); min-height:100vh; }
+  header { text-align:center; padding:48px 16px 34px; position:relative;
+           background:linear-gradient(135deg,#ffd6e3,#ffe8f0 60%,#fff0f5);
+           border-radius:0 0 50% 50% / 0 0 28px 28px; }
+  header h1 { margin:0 0 10px; font-family:"Gaegu","Gowun Dodum",cursive; font-size:2.8rem;
+              color:var(--pink-text); letter-spacing:1px; text-shadow:2px 2px 0 #fff; }
+  header p { margin:0; color:#a07d8b; font-size:1.05rem; }
+  header .deco { position:absolute; font-size:1.4rem; opacity:.7; }
+  header .d1 { left:12%; top:26px; } header .d2 { right:12%; top:40px; }
+  header .d3 { left:22%; bottom:14px; } header .d4 { right:24%; bottom:18px; }
+
+  /* 폴더 */
+  #folders { display:flex; flex-wrap:wrap; justify-content:center; gap:14px; padding:24px 16px 0; }
+  .folder { position:relative; width:130px; padding:26px 10px 14px; text-align:center; cursor:pointer;
+            background:var(--pink); border:none; border-radius:4px 14px 14px 14px; font-size:1rem;
+            color:var(--text); box-shadow:0 2px 6px rgba(214,87,138,.2); transition:transform .15s; }
+  .folder::before { content:""; position:absolute; top:-10px; left:0; width:50px; height:12px;
+                    background:inherit; border-radius:8px 8px 0 0; }
+  .folder:hover { transform:translateY(-4px); }
+  .folder .ico { font-size:2rem; display:block; }
+  .folder b { display:block; margin-top:4px; }
+  .folder small { color:#8a6674; }
+  .folder.on { background:var(--pink-deep); color:#fff; }
+  .folder.on small { color:#fff; }
+
+  .tools { text-align:center; padding:20px 16px 0; }
+  .tools input[type=text] { padding:10px 16px; width:min(300px,70%); border:1px solid var(--pink);
+                            border-radius:20px; font-size:1rem; outline:none; background:#fff; }
+  #addBtn { margin-left:8px; padding:10px 18px; border:none; border-radius:20px; cursor:pointer;
+            background:var(--pink-deep); color:#fff; font-size:1rem; font-weight:bold;
+            box-shadow:0 2px 6px rgba(214,87,138,.3); }
+  #addBtn:hover { background:#ff86ab; }
+
+  #grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px;
+          max-width:1000px; margin:24px auto; padding:0 16px; }
+  .card { position:relative; background:var(--card); border-radius:24px; padding:22px 20px; text-align:center;
+          border:2px dashed #ffd0e0; box-shadow:0 6px 18px rgba(214,87,138,.12); transition:transform .2s; }
+  .card:hover { transform:translateY(-6px) rotate(-1deg); }
+  .emoji { font-size:3.5rem; }
+  .card h3 { margin:8px 0 4px; }
+  .tag { display:inline-block; background:var(--pink); color:var(--pink-text); font-size:.8rem;
+         padding:2px 10px; border-radius:10px; }
+  .stars { color:#ffb6cc; margin:8px 0; font-size:1.1rem; }
+  .card p { margin:0; font-size:.95rem; }
+  .del { position:absolute; top:8px; right:10px; border:none; background:none; cursor:pointer;
+         color:#ccb; font-size:1.1rem; }
+  .del:hover { color:var(--pink-text); }
+  #empty { text-align:center; color:#b9a; display:none; }
+
+  /* 추가 창 */
+  #modal { display:none; position:fixed; inset:0; background:rgba(90,70,80,.4);
+           align-items:center; justify-content:center; padding:16px; }
+  #modal.show { display:flex; }
+  #form { background:#fff; border-radius:20px; padding:24px; width:min(380px,100%);
+          box-shadow:0 8px 30px rgba(0,0,0,.2); }
+  #form h2 { margin:0 0 14px; text-align:center; }
+  #form label { display:block; margin:10px 0 4px; font-size:.9rem; color:#8a6674; }
+  #form input, #form select { width:100%; padding:9px 12px; border:1px solid var(--pink);
+                              border-radius:10px; font-size:1rem; background:#fff; }
+  .btns { display:flex; gap:8px; margin-top:18px; }
+  .btns button { flex:1; padding:10px; border:none; border-radius:12px; font-size:1rem; cursor:pointer; }
+  #save { background:var(--pink-deep); color:#fff; font-weight:bold; }
+  #cancel { background:var(--pink); color:var(--text); }
+  footer { text-align:center; padding:20px; color:#c9a; font-size:.9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="deco d1">🌸</span><span class="deco d2">✨</span>
+  <span class="deco d3">🎀</span><span class="deco d4">🤍</span>
+  <h1>좋아서 모아둔 것들</h1>
+  <p>오늘도 마음에 쏙 든 것들을 한 칸씩 담아요 🎀</p>
+</header>
+
+<div id="folders"></div>
+
+<div class="tools">
+  <input type="text" id="search" placeholder="🔍 이름으로 검색">
+  <button id="addBtn">＋ 담기</button>
+</div>
+
+<div id="grid"></div>
+<p id="empty">아직 텅 비어 있어요. 좋아하는 걸 하나 담아볼까요? 💗</p>
+
+<!-- 추가 창 -->
+<div id="modal">
+  <form id="form">
+    <h2>💗 오늘의 좋아함 담기</h2>
+    <label>폴더</label>
+    <select id="fType"></select>
+    <label>이모티콘 (예: 🍕)</label>
+    <input id="fEmoji" maxlength="4" placeholder="🍕">
+    <label>이름</label>
+    <input id="fName" maxlength="20" placeholder="좋아하는 것의 이름" required>
+    <label>별점</label>
+    <select id="fStars">
+      <option value="5">★★★★★</option><option value="4">★★★★☆</option>
+      <option value="3">★★★☆☆</option><option value="2">★★☆☆☆</option>
+      <option value="1">★☆☆☆☆</option>
+    </select>
+    <label>한줄 소개</label>
+    <input id="fMemo" maxlength="40" placeholder="왜 좋아하나요?">
+    <div class="btns">
+      <button type="button" id="cancel">취소</button>
+      <button type="submit" id="save">저장</button>
+    </div>
+  </form>
+</div>
+
+<footer>🌷 좋아하는 마음은 많을수록 좋으니까 · 2026</footer>
+
+<script>
+/* ✏️ 폴더 목록 (이름과 아이콘을 바꿀 수 있어요) */
+const folders = [
+  { name:"음식", icon:"🍰" },
+  { name:"게임", icon:"🎮" },
+  { name:"카페", icon:"☕" },
+];
+
+/* ✏️ 처음에 보이는 예시 카드 (추가한 카드는 브라우저에 자동 저장돼요) */
+const starter = [
+  { emoji:"🍰", name:"딸기 케이크", type:"음식", stars:5, memo:"생일 때마다 먹고 싶은 맛!" },
+  { emoji:"🍜", name:"매운 라면",   type:"음식", stars:4, memo:"스트레스 받을 때 최고." },
+  { emoji:"🎮", name:"마인크래프트", type:"게임", stars:5, memo:"친구들과 같이 하면 시간 순삭." },
+  { emoji:"🏃", name:"달리기 게임", type:"게임", stars:3, memo:"짧게 하기 좋아요." },
+  { emoji:"☕", name:"우리동네 카페", type:"카페", stars:5, memo:"조용해서 공부하기 딱 좋아요." },
+  { emoji:"🧋", name:"버블티",       type:"카페", stars:4, memo:"타피오카는 많이 넣어서!" },
+];
+/* ============== 여기 아래는 안 건드려도 돼요 ============== */
+
+const $ = id => document.getElementById(id);
+let items = starter;
+try {
+  const saved = localStorage.getItem("taste-items");
+  if (saved) items = JSON.parse(saved);
+} catch (e) {}
+function save() { try { localStorage.setItem("taste-items", JSON.stringify(items)); } catch (e) {} }
+
+let current = "전체";
+
+function esc(s) { return s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function renderFolders() {
+  const all = [{ name:"전체", icon:"📁" }, ...folders];
+  $("folders").innerHTML = "";
+  all.forEach(f => {
+    const n = f.name === "전체" ? items.length : items.filter(i => i.type === f.name).length;
+    const b = document.createElement("button");
+    b.className = "folder" + (f.name === current ? " on" : "");
+    b.innerHTML = `<span class="ico">${f.icon}</span><b>${f.name}</b><small>${n}개</small>`;
+    b.onclick = () => { current = f.name; renderFolders(); renderCards(); };
+    $("folders").appendChild(b);
+  });
+}
+
+function renderCards() {
+  const word = $("search").value.trim();
+  const shown = items
+    .map((it, idx) => ({ it, idx }))
+    .filter(({ it }) => (current === "전체" || it.type === current) && it.name.includes(word));
+  $("grid").innerHTML = shown.map(({ it, idx }) => `
+    <div class="card">
+      <button class="del" title="삭제" onclick="removeItem(${idx})">✕</button>
+      <div class="emoji">${esc(it.emoji)}</div>
+      <h3>${esc(it.name)}</h3>
+      <span class="tag">${esc(it.type)}</span>
+      <div class="stars">${"★".repeat(it.stars)}${"☆".repeat(5 - it.stars)}</div>
+      <p>${esc(it.memo)}</p>
+    </div>`).join("");
+  $("empty").style.display = shown.length ? "none" : "block";
+}
+
+function removeItem(idx) {
+  if (!confirm("이 카드를 삭제할까요?")) return;
+  items.splice(idx, 1);
+  save(); renderFolders(); renderCards();
+}
+
+/* 추가 창 */
+folders.forEach(f => {
+  const o = document.createElement("option");
+  o.value = f.name; o.textContent = f.icon + " " + f.name;
+  $("fType").appendChild(o);
+});
+$("addBtn").onclick = () => {
+  if (current !== "전체") $("fType").value = current;
+  $("modal").classList.add("show");
+  $("fName").focus();
+};
+function closeModal() { $("modal").classList.remove("show"); $("form").reset(); }
+$("cancel").onclick = closeModal;
+$("modal").onclick = e => { if (e.target === $("modal")) closeModal(); };
+$("form").onsubmit = e => {
+  e.preventDefault();
+  const type = $("fType").value;
+  const icon = folders.find(f => f.name === type).icon;
+  items.push({
+    emoji: $("fEmoji").value.trim() || icon,
+    name: $("fName").value.trim(),
+    type,
+    stars: Number($("fStars").value),
+    memo: $("fMemo").value.trim() || "내가 좋아하는 것!",
+  });
+  save(); closeModal(); current = type; renderFolders(); renderCards();
+};
+
+$("search").oninput = renderCards;
+renderFolders();
+renderCards();
+</script>
+</body>
+</html>
