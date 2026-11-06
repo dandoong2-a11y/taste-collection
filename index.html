@@ -51,6 +51,41 @@
   .card { position:relative; background:var(--card); border-radius:24px; padding:22px 20px; text-align:center;
           border:2px dashed #ffd0e0; box-shadow:0 6px 18px rgba(214,87,138,.12); transition:transform .2s; }
   .card:hover { transform:translateY(-6px) rotate(-1deg); }
+  .card { cursor:pointer; }
+  .more { margin-top:10px; font-size:.8rem; color:#d6a; }
+
+  /* 자세히 보기 창 */
+  #detail { display:none; position:fixed; inset:0; background:rgba(90,70,80,.4);
+            align-items:center; justify-content:center; padding:16px; }
+  #detail.show { display:flex; }
+  #dBox { position:relative; background:#fff; border-radius:26px; padding:30px 26px 24px; text-align:center;
+          width:min(400px,100%); max-height:90vh; overflow:auto; border:3px dashed #ffd0e0;
+          box-shadow:0 8px 30px rgba(0,0,0,.2); }
+  #dClose { position:absolute; top:12px; right:16px; border:none; background:none; cursor:pointer;
+            font-size:1.3rem; color:#c9a; }
+  #dEmoji { font-size:4.5rem; }
+  #dName { margin:8px 0 6px; font-family:"Gaegu","Gowun Dodum",cursive; font-size:1.9rem; color:var(--pink-text); }
+  #dMemo { margin:10px 0 0; font-weight:bold; }
+  #dText { margin:14px 0 0; padding:14px; background:var(--bg); border-radius:14px; text-align:left;
+           line-height:1.7; white-space:pre-wrap; }
+  #dDate { margin-top:12px; font-size:.8rem; color:#c9a; }
+
+  /* 사진 / 수정 버튼 */
+  .photo { width:110px; height:110px; object-fit:cover; border-radius:50%;
+           border:4px solid var(--pink); display:block; margin:0 auto; }
+  #dPhoto { width:170px; height:170px; display:none; margin:0 auto 4px; }
+  .edt { position:absolute; top:8px; left:10px; border:none; background:none; cursor:pointer;
+         color:#ccb; font-size:1rem; }
+  .edt:hover { color:var(--pink-text); }
+  #dEdit { margin-top:16px; padding:9px 22px; border:none; border-radius:16px; cursor:pointer;
+           background:var(--pink); color:var(--text); font-size:1rem; font-family:inherit; }
+  #dEdit:hover { background:var(--pink-deep); color:#fff; }
+  #pPreview { display:none; width:90px; height:90px; object-fit:cover; border-radius:50%;
+              border:3px solid var(--pink); margin:8px auto 0; }
+  #pRemove { display:none; margin:6px auto 0; border:none; background:none; cursor:pointer;
+             color:var(--pink-text); font-size:.85rem; text-decoration:underline; }
+  .photoBox { text-align:center; }
+  #fPhoto { padding:6px; }
   .emoji { font-size:3.5rem; }
   .card h3 { margin:8px 0 4px; }
   .tag { display:inline-block; background:var(--pink); color:var(--pink-text); font-size:.8rem;
@@ -70,6 +105,8 @@
           box-shadow:0 8px 30px rgba(0,0,0,.2); }
   #form h2 { margin:0 0 14px; text-align:center; }
   #form label { display:block; margin:10px 0 4px; font-size:.9rem; color:#8a6674; }
+  #form textarea { width:100%; padding:9px 12px; border:1px solid var(--pink); border-radius:10px;
+                   font-size:1rem; font-family:inherit; resize:vertical; min-height:80px; }
   #form input, #form select { width:100%; padding:9px 12px; border:1px solid var(--pink);
                               border-radius:10px; font-size:1rem; background:#fff; }
   .btns { display:flex; gap:8px; margin-top:18px; }
@@ -101,9 +138,15 @@
 <!-- 추가 창 -->
 <div id="modal">
   <form id="form">
-    <h2>💗 오늘의 좋아함 담기</h2>
+    <h2 id="fTitle">💗 오늘의 좋아함 담기</h2>
     <label>폴더</label>
     <select id="fType"></select>
+    <label>사진 (없으면 이모티콘이 보여요)</label>
+    <div class="photoBox">
+      <input type="file" id="fPhoto" accept="image/*">
+      <img id="pPreview" alt="">
+      <button type="button" id="pRemove">사진 지우기</button>
+    </div>
     <label>이모티콘 (예: 🍕)</label>
     <input id="fEmoji" maxlength="4" placeholder="🍕">
     <label>이름</label>
@@ -116,11 +159,29 @@
     </select>
     <label>한줄 소개</label>
     <input id="fMemo" maxlength="40" placeholder="왜 좋아하나요?">
+    <label>자세한 설명 (카드를 누르면 보여요)</label>
+    <textarea id="fDetail" maxlength="500" placeholder="좋아하게 된 계기, 추천 포인트 등을 자유롭게 적어보세요"></textarea>
     <div class="btns">
       <button type="button" id="cancel">취소</button>
       <button type="submit" id="save">저장</button>
     </div>
   </form>
+</div>
+
+<!-- 자세히 보기 창 -->
+<div id="detail">
+  <div id="dBox">
+    <button id="dClose" title="닫기">✕</button>
+    <img id="dPhoto" class="photo" alt="">
+    <div id="dEmoji"></div>
+    <h2 id="dName"></h2>
+    <span class="tag" id="dTag"></span>
+    <div class="stars" id="dStars"></div>
+    <p id="dMemo"></p>
+    <div id="dText"></div>
+    <div id="dDate"></div>
+    <button id="dEdit">✏️ 수정하기</button>
+  </div>
 </div>
 
 <footer>🌷 좋아하는 마음은 많을수록 좋으니까 · 2026</footer>
@@ -135,12 +196,18 @@ const folders = [
 
 /* ✏️ 처음에 보이는 예시 카드 (추가한 카드는 브라우저에 자동 저장돼요) */
 const starter = [
-  { emoji:"🍰", name:"딸기 케이크", type:"음식", stars:5, memo:"생일 때마다 먹고 싶은 맛!" },
-  { emoji:"🍜", name:"매운 라면",   type:"음식", stars:4, memo:"스트레스 받을 때 최고." },
-  { emoji:"🎮", name:"마인크래프트", type:"게임", stars:5, memo:"친구들과 같이 하면 시간 순삭." },
-  { emoji:"🏃", name:"달리기 게임", type:"게임", stars:3, memo:"짧게 하기 좋아요." },
-  { emoji:"☕", name:"우리동네 카페", type:"카페", stars:5, memo:"조용해서 공부하기 딱 좋아요." },
-  { emoji:"🧋", name:"버블티",       type:"카페", stars:4, memo:"타피오카는 많이 넣어서!" },
+  { emoji:"🍰", name:"딸기 케이크", type:"음식", stars:5, memo:"생일 때마다 먹고 싶은 맛!",
+    detail:"생크림이 너무 달지 않고 딸기가 듬뿍 올라간 케이크가 제일 좋아요.\n생일이나 기분 좋은 날에 꼭 먹어요." },
+  { emoji:"🍜", name:"매운 라면",   type:"음식", stars:4, memo:"스트레스 받을 때 최고.",
+    detail:"땀이 날 정도로 매운 라면이 좋아요.\n치즈를 넣으면 맛이 부드러워져서 더 맛있어요." },
+  { emoji:"🎮", name:"마인크래프트", type:"게임", stars:5, memo:"친구들과 같이 하면 시간 순삭.",
+    detail:"집을 짓고 탐험하다 보면 시간 가는 줄 몰라요.\n친구들과 같은 서버에서 함께 할 때 제일 재미있어요." },
+  { emoji:"🏃", name:"달리기 게임", type:"게임", stars:3, memo:"짧게 하기 좋아요.",
+    detail:"한 판이 짧아서 쉬는 시간에 가볍게 하기 좋아요." },
+  { emoji:"☕", name:"우리동네 카페", type:"카페", stars:5, memo:"조용해서 공부하기 딱 좋아요.",
+    detail:"창가 자리가 있고 음악이 잔잔해서 공부하기 좋아요.\n시그니처 메뉴는 따뜻한 라떼예요." },
+  { emoji:"🧋", name:"버블티",       type:"카페", stars:4, memo:"타피오카는 많이 넣어서!",
+    detail:"당도 50%에 타피오카 추가가 나만의 주문 공식이에요." },
 ];
 /* ============== 여기 아래는 안 건드려도 돼요 ============== */
 
@@ -150,7 +217,13 @@ try {
   const saved = localStorage.getItem("taste-items");
   if (saved) items = JSON.parse(saved);
 } catch (e) {}
-function save() { try { localStorage.setItem("taste-items", JSON.stringify(items)); } catch (e) {} }
+function save() {
+  try { localStorage.setItem("taste-items", JSON.stringify(items)); return true; }
+  catch (e) {
+    alert("저장 공간이 부족하거나 저장할 수 없어요. 지금 화면에는 보이지만 새로고침하면 사라질 수 있어요. 사진을 줄이거나 안 쓰는 카드를 지워 보세요.");
+    return false;
+  }
+}
 
 let current = "전체";
 
@@ -175,13 +248,15 @@ function renderCards() {
     .map((it, idx) => ({ it, idx }))
     .filter(({ it }) => (current === "전체" || it.type === current) && it.name.includes(word));
   $("grid").innerHTML = shown.map(({ it, idx }) => `
-    <div class="card">
-      <button class="del" title="삭제" onclick="removeItem(${idx})">✕</button>
-      <div class="emoji">${esc(it.emoji)}</div>
+    <div class="card" onclick="openDetail(${idx})">
+      <button class="edt" title="수정" onclick="event.stopPropagation(); openForm(${idx})">✏️</button>
+      <button class="del" title="삭제" onclick="event.stopPropagation(); removeItem(${idx})">✕</button>
+      ${it.photo ? `<img class="photo" src="${it.photo}" alt="">` : `<div class="emoji">${esc(it.emoji)}</div>`}
       <h3>${esc(it.name)}</h3>
       <span class="tag">${esc(it.type)}</span>
       <div class="stars">${"★".repeat(it.stars)}${"☆".repeat(5 - it.stars)}</div>
       <p>${esc(it.memo)}</p>
+      <div class="more">눌러서 자세히 보기 ✨</div>
     </div>`).join("");
   $("empty").style.display = shown.length ? "none" : "block";
 }
@@ -192,31 +267,120 @@ function removeItem(idx) {
   save(); renderFolders(); renderCards();
 }
 
+/* 자세히 보기 창 */
+let detailIdx = null;
+function openDetail(idx) {
+  const it = items[idx];
+  if (!it) return;
+  detailIdx = idx;
+  $("dPhoto").style.display = it.photo ? "block" : "none";
+  if (it.photo) $("dPhoto").src = it.photo;
+  $("dEmoji").style.display = it.photo ? "none" : "block";
+  $("dEmoji").textContent = it.emoji;
+  $("dName").textContent = it.name;
+  $("dTag").textContent = it.type;
+  $("dStars").textContent = "★".repeat(it.stars) + "☆".repeat(5 - it.stars);
+  $("dMemo").textContent = it.memo;
+  $("dText").textContent = it.detail || "아직 자세한 설명이 없어요. 아래 「수정하기」로 적어볼까요?";
+  $("dDate").textContent = it.date ? "담은 날 · " + it.date : "";
+  $("dDate").style.display = it.date ? "block" : "none";
+  $("detail").classList.add("show");
+}
+function closeDetail() { $("detail").classList.remove("show"); }
+$("dClose").onclick = closeDetail;
+$("dEdit").onclick = () => { const i = detailIdx; closeDetail(); openForm(i); };
+$("detail").onclick = e => { if (e.target === $("detail")) closeDetail(); };
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { closeDetail(); closeModal(); }
+});
+
 /* 추가 창 */
 folders.forEach(f => {
   const o = document.createElement("option");
   o.value = f.name; o.textContent = f.icon + " " + f.name;
   $("fType").appendChild(o);
 });
-$("addBtn").onclick = () => {
-  if (current !== "전체") $("fType").value = current;
+/* 추가·수정 창 (같은 창을 같이 써요) */
+let editIdx = null;    // null이면 새로 담기, 숫자면 그 카드를 수정
+let formPhoto = "";    // 지금 창에 올려둔 사진
+
+function showPreview() {
+  $("pPreview").style.display = formPhoto ? "block" : "none";
+  $("pPreview").src = formPhoto;
+  $("pRemove").style.display = formPhoto ? "inline-block" : "none";
+}
+
+function openForm(idx) {
+  editIdx = (typeof idx === "number") ? idx : null;
+  if (editIdx !== null) {
+    const it = items[editIdx];
+    $("fTitle").textContent = "✏️ 카드 수정하기";
+    $("fType").value = it.type;
+    $("fEmoji").value = it.emoji;
+    $("fName").value = it.name;
+    $("fStars").value = it.stars;
+    $("fMemo").value = it.memo;
+    $("fDetail").value = it.detail || "";
+    formPhoto = it.photo || "";
+  } else {
+    $("fTitle").textContent = "💗 오늘의 좋아함 담기";
+    if (current !== "전체") $("fType").value = current;
+    formPhoto = "";
+  }
+  showPreview();
   $("modal").classList.add("show");
   $("fName").focus();
-};
-function closeModal() { $("modal").classList.remove("show"); $("form").reset(); }
+}
+$("addBtn").onclick = () => openForm();
+
+function closeModal() {
+  $("modal").classList.remove("show");
+  $("form").reset();
+  editIdx = null; formPhoto = ""; showPreview();
+}
 $("cancel").onclick = closeModal;
 $("modal").onclick = e => { if (e.target === $("modal")) closeModal(); };
+
+/* 사진 고르기: 너무 크면 저장이 안 되니까 가로세로 최대 500px로 줄여요 */
+$("fPhoto").onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) { alert("이미지 파일을 골라주세요."); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, 500 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      formPhoto = c.toDataURL("image/jpeg", 0.8);
+      showPreview();
+    };
+    img.onerror = () => alert("이 사진은 불러올 수 없어요. 다른 사진을 골라주세요.");
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+};
+$("pRemove").onclick = () => { formPhoto = ""; $("fPhoto").value = ""; showPreview(); };
+
 $("form").onsubmit = e => {
   e.preventDefault();
   const type = $("fType").value;
   const icon = folders.find(f => f.name === type).icon;
-  items.push({
+  const old = editIdx !== null ? items[editIdx] : null;
+  const data = {
     emoji: $("fEmoji").value.trim() || icon,
     name: $("fName").value.trim(),
     type,
     stars: Number($("fStars").value),
     memo: $("fMemo").value.trim() || "내가 좋아하는 것!",
-  });
+    detail: $("fDetail").value.trim(),
+    photo: formPhoto,
+    date: old ? (old.date || "") : new Date().toLocaleDateString("ko-KR"),
+  };
+  if (old) items[editIdx] = data; else items.push(data);
   save(); closeModal(); current = type; renderFolders(); renderCards();
 };
 
