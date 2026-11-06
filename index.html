@@ -9,19 +9,19 @@
 <script>try{var t=localStorage.getItem("taste-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <style>
 
-  /* 디자인 토큰: 차분한 로즈 핑크 + 샴페인 골드 포인트 + 짙은 플럼 글자 */
+  /* 디자인 토큰: 연한 파스텔 핑크 + 복숭아빛 포인트 + 부드러운 플럼 글자 */
   :root {
-    --bg:#fbf3f4; --ivory:#fffdfb; --blush:#f3dde2; --blush2:#f8e9ec;
-    --rose:#b0507a; --rose-d:#8f3a61; --plum:#3f2a33; --sub:#7a6068;
-    --line:#ecd6dc; --rule:#f2e4e7; --gold:#b58a5c; --star:#c0845f;
+    --bg:#fff6f9; --ivory:#fffefe; --blush:#fde3ec; --blush2:#fff0f5;
+    --rose:#e386a8; --rose-d:#c9547f; --plum:#5a3a48; --sub:#9a7684;
+    --line:#f7d9e4; --rule:#fbe8ef; --gold:#e0a96e; --star:#e8a06a;
     --shadow:0 1px 2px rgba(var(--ink),.06), 0 10px 26px rgba(var(--glow),.09);
     --shadow-up:0 2px 4px rgba(var(--ink),.07), 0 16px 34px rgba(var(--glow),.15);
     --serif:"Gowun Batang","Noto Serif KR",Georgia,serif;
     --sans:"Gowun Dodum","Malgun Gothic",sans-serif;
   }
   /* 테마: 설정에서 고르면 html의 data-theme 값이 바뀌어요 */
-  :root { --paper:#fff; --on:#fff; --muted:#a98c96; --favoff:#c2a0ae; --glow:176,80,122; --ink:63,42,51;
-          --hd1:#f6e3e8; --nav:rgba(255,253,251,.92); --bg-grad:linear-gradient(180deg,#f7e8ec 0%,#fbf3f4 28%,#fdf9f9 100%); }
+  :root { --paper:#fff; --on:#fff; --muted:#c9a4b3; --favoff:#e6c0cd; --glow:227,134,168; --ink:110,66,84;
+          --hd1:#fde6ee; --nav:rgba(255,254,254,.92); --bg-grad:linear-gradient(180deg,#ffe9f1 0%,#fff6f9 30%,#fffafb 100%); }
   html[data-theme="lavender"] { --bg:#f6f3fb; --ivory:#fffeff; --blush:#e6def3; --blush2:#efe9f8; --rose:#7b5ea7; --rose-d:#5f4488; --plum:#2f2840; --sub:#6c6480;
     --line:#ddd5ec; --rule:#e8e2f2; --muted:#9a90b0; --favoff:#b7aed0; --glow:123,94,167; --ink:47,40,64; --hd1:#e9e1f5; --nav:rgba(255,254,255,.92);
     --bg-grad:linear-gradient(180deg,#ece4f6 0%,#f6f3fb 28%,#faf8fd 100%); }
@@ -341,7 +341,7 @@
     <div class="sgrp">테마</div>
     <p class="sline">좋아하는 분위기로 색을 바꿔요. 이 기기에 기억돼요.</p>
     <div class="themes" id="themes">
-      <button type="button" data-t="rose" aria-pressed="false"><i style="background:linear-gradient(135deg,#f3dde2 50%,#b0507a 50%)"></i>로즈</button>
+      <button type="button" data-t="rose" aria-pressed="false"><i style="background:linear-gradient(135deg,#fde3ec 50%,#e386a8 50%)"></i>로즈</button>
       <button type="button" data-t="lavender" aria-pressed="false"><i style="background:linear-gradient(135deg,#e6def3 50%,#7b5ea7 50%)"></i>라벤더</button>
       <button type="button" data-t="mint" aria-pressed="false"><i style="background:linear-gradient(135deg,#d8ede3 50%,#3f8f7a 50%)"></i>민트</button>
       <button type="button" data-t="mocha" aria-pressed="false"><i style="background:linear-gradient(135deg,#f0e2d0 50%,#a8704a 50%)"></i>모카</button>
@@ -378,6 +378,7 @@ const folders = [
   { name:"음식", icon:"🍰" },
   { name:"게임", icon:"🎮" },
   { name:"카페", icon:"☕" },
+  { name:"물건", icon:"🧸" },
 ];
 
 /* ✏️ 처음에 보이는 예시 카드 (추가한 카드는 브라우저에 자동 저장돼요) */
@@ -394,6 +395,10 @@ const starter = [
     detail:"창가 자리가 있고 음악이 잔잔해서 공부하기 좋아요.\n시그니처 메뉴는 따뜻한 라떼예요." },
   { emoji:"🧋", name:"버블티",       type:"카페", stars:4, memo:"타피오카는 많이 넣어서!",
     detail:"당도 50%에 타피오카 추가가 나만의 주문 공식이에요." },
+  { emoji:"🧸", name:"곰돌이 인형", type:"물건", stars:5, memo:"어릴 때부터 함께한 내 보물.",
+    detail:"생일 선물로 받은 인형이에요.\n이사할 때도 꼭 챙겨 가요." },
+  { emoji:"🎧", name:"분홍 헤드폰", type:"물건", stars:4, memo:"쓰면 기분이 좋아지는 색.",
+    detail:"공부할 때나 이동할 때 늘 가지고 다녀요." },
 ];
 /* ============== 여기 아래는 안 건드려도 돼요 ============== */
 
